@@ -1,0 +1,13 @@
+{
+  "name": "vue",
+  "version": "1.0.0",
+  "description": "包含项目入口、导出、打包等",
+  "module": "index.ts",
+  "dependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
