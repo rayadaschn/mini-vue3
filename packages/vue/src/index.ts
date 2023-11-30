@@ -1,3 +1,5 @@
-import { isArray } from 'shared/src'
+// import { isArray } from 'shared/src'
 
-console.log(isArray([]))
+// console.log(isArray([]))
+
+export { reactive } from 'reactivity'

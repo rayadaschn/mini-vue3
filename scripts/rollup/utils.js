@@ -8,7 +8,7 @@ import cjs from '@rollup/plugin-commonjs'
 const pkgPath = path.resolve(__dirname, '../../packages')
 
 /** 打包路径 */
-const distPath = path.resolve(__dirname, '../../dist/node_modules')
+const distPath = path.resolve(__dirname, '../../dist')
 
 /** 获取包路径，区分是否打包 */
 export const resolvePkgPath = (pkgName, isDist) => {

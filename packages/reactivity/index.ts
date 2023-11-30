@@ -1,1 +1,1 @@
-console.log('HelloWorld')
+export { reactive } from './src/reactive'

@@ -10,7 +10,7 @@ export default [
     input: `${pkgPath}/${module}`,
     output: {
       file: `${pkgDistPath}/index.js`,
-      name: 'index.js',
+      name: 'vue',
       format: 'umd',
       sourcemap: true,
     },

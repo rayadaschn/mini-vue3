@@ -4,10 +4,11 @@
   "description": "手写 Vue3 源码",
   "main": "index.js",
   "scripts": {
+    "dev": "rollup --bundleConfigAsCjs -w --config scripts/rollup/vue.config.js ",
     "lint:fix": "eslint ./packages --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "pnpm lint:format && pnpm lint:fix ",
-    "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/vue.config.js",
+    "build": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/vue.config.js",
     "mirror:get": "npm config get registry",
     "mirror:set": "npm config set registry https://registry.npmmirror.com",
     "mirror:rm": "npm config rm registry",
