@@ -1,8 +1,5 @@
 import { mutableHandlers } from './baseHandler'
-
-export const enum ReactiveFlags {
-  IS_REACTIVE = '__v_isReactive',
-}
+import { ReactiveFlags } from './constants'
 
 /**
  * @description: 响应性 Map 缓存对象

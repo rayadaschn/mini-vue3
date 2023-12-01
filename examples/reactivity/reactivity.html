@@ -6,17 +6,29 @@
     <title>Reactivity</title>
     <script src="../../dist/vue/index.js"></script>
   </head>
-  <body></body>
+  <body>
+    <div id="app"></div>
+  </body>
   <script>
-    const { reactive } = vue
+    const { reactive, effect } = vue
     console.log('reactive', reactive)
 
     const obj = reactive({
       name: 'Huy',
     })
 
-    console.log(obj)
-    console.log(obj.name)
-    obj.name = 'huy'
+    // reactive 功能测试
+    // console.log(obj)
+    // console.log(obj.name)
+    // obj.name = 'huy'
+
+    // effect 功能测试
+    effect(() => {
+      document.querySelector('#app').innerText = obj.name
+    })
+
+    setTimeout(() => {
+      obj.name = 'huy'
+    }, 2000)
   </script>
 </html>

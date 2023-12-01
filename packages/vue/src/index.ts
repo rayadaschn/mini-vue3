@@ -2,4 +2,4 @@
 
 // console.log(isArray([]))
 
-export { reactive } from 'reactivity'
+export * from 'reactivity'
