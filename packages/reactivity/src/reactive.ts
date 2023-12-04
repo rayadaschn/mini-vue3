@@ -1,3 +1,4 @@
+import { isObject } from 'shared'
 import { mutableHandlers } from './baseHandler'
 import { ReactiveFlags } from './constants'
 
@@ -38,4 +39,13 @@ function createReactiveObject(
   // 缓存代理对象
   proxyMap.set(target, proxy)
   return proxy
+}
+
+/**
+ * @description: 转换为 reactive 响应式
+ * @param {*} T
+ * @return {*}
+ */
+export const toReactive = <T>(value: T): T => {
+  return isObject(value) ? reactive(value as object) : value
 }
