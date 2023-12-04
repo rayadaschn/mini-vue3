@@ -1,7 +1,10 @@
 import { isArray } from 'shared'
 import { Dep, createDep } from './dep'
+import { ComputedRefImpl } from './computed'
 
 type KeyToDepMap = Map<any, Dep>
+
+export type EffectScheduler = (...args: any[]) => any
 
 /**
  * @description: 检测是否添加 effect 响应回调函数
@@ -94,7 +97,11 @@ export function triggerEffects(dep: Dep) {
  * @return {*}
  */
 export function triggerEffect(effect: ReactiveEffect) {
-  effect.run()
+  if (effect.scheduler) {
+    effect.scheduler() // 优先执行调度器
+  } else {
+    effect.run()
+  }
 }
 
 export function effect<T = any>(fn: () => T) {
@@ -104,7 +111,11 @@ export function effect<T = any>(fn: () => T) {
 }
 
 export class ReactiveEffect<T = any> {
-  constructor(public fn: () => T) {}
+  public computed?: ComputedRefImpl<T>
+  constructor(
+    public fn: () => T,
+    public scheduler: EffectScheduler | null = null, // 调度器
+  ) {}
   run() {
     activeEffect = this as ReactiveEffect<any>
     return this.fn()

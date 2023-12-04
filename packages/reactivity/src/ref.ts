@@ -2,6 +2,7 @@ import { hasChanged } from 'shared'
 import { Dep, createDep } from './dep'
 import { activeEffect, trackEffects, triggerEffects } from './effect'
 import { toReactive } from './reactive'
+import { ComputedRefImpl } from './computed'
 
 export interface Ref<T = any> {
   value: T
@@ -61,7 +62,7 @@ class RefImpl<T = unknown> {
  * @description: 依赖收集
  * @param {*} ref
  */
-export function trackRefValue(ref: RefImpl) {
+export function trackRefValue(ref: RefImpl | ComputedRefImpl) {
   if (activeEffect) {
     trackEffects(ref.dep || (ref.dep = createDep()))
   }
@@ -72,7 +73,7 @@ export function trackRefValue(ref: RefImpl) {
  * @param {*} ref
  * @return {*}
  */
-export function triggerRefValue(ref: RefImpl) {
+export function triggerRefValue(ref: RefImpl | ComputedRefImpl) {
   if (ref.dep) {
     triggerEffects(ref.dep)
   }

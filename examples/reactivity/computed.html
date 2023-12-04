@@ -3,24 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ref</title>
+    <title>Computed</title>
     <script src="../../dist/vue/index.js"></script>
   </head>
   <body>
     <div id="app"></div>
   </body>
   <script>
-    const { ref, effect } = vue
+    const { reactive, computed, effect } = vue
 
-    const obj = ref('Huy')
+    const obj = reactive({
+      name: 'Huy',
+    })
+
+    const computedObj = computed(() => {
+      return `my name is ${obj.name}`
+    })
 
     // effect 功能测试
     effect(() => {
-      document.querySelector('#app').innerText = obj.value // 添加执行函数，触发 Getter 依赖收集
+      document.querySelector('#app').innerText = computedObj.value // 添加执行函数，触发 Getter 依赖收集
     })
 
     setTimeout(() => {
-      obj.value = 'huy'
+      obj.name = 'huy'
     }, 2000)
   </script>
 </html>
