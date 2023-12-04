@@ -1,5 +1,6 @@
+import { hasChanged } from 'shared'
 import { Dep, createDep } from './dep'
-import { activeEffect, trackEffects } from './effect'
+import { activeEffect, trackEffects, triggerEffects } from './effect'
 import { toReactive } from './reactive'
 
 export interface Ref<T = any> {
@@ -22,8 +23,9 @@ export function createRef(rawValue: unknown, shallow: boolean) {
  * @description: 创建一个 Ref
  * @return {*}
  */
-class RefImpl<T> {
+class RefImpl<T = unknown> {
   private _value: T
+  private _rawValue: T // 原始值
   public dep?: Dep = undefined
   public readonly __v_isRef = true
 
@@ -31,6 +33,7 @@ class RefImpl<T> {
     value: T,
     public readonly __v_isShallow: boolean, // 是否为复杂类型
   ) {
+    this._rawValue = value
     this._value = __v_isShallow ? value : toReactive(value)
   }
 
@@ -44,21 +47,34 @@ class RefImpl<T> {
 
   /**
    * @description: 设置 value 属性时, 操作
-   * @param {T} v
    */
-  public set value(v: T) {
-    this._value = v
+  public set value(newVal: T) {
+    if (hasChanged(newVal, this._rawValue)) {
+      this._rawValue = newVal
+      this._value = toReactive(newVal)
+      triggerRefValue(this)
+    }
   }
 }
 
 /**
  * @description: 依赖收集
  * @param {*} ref
- * @return {*}
  */
-export function trackRefValue(ref: any) {
+export function trackRefValue(ref: RefImpl) {
   if (activeEffect) {
     trackEffects(ref.dep || (ref.dep = createDep()))
+  }
+}
+
+/**
+ * @description: 触发依赖
+ * @param {*} ref
+ * @return {*}
+ */
+export function triggerRefValue(ref: RefImpl) {
+  if (ref.dep) {
+    triggerEffects(ref.dep)
   }
 }
 

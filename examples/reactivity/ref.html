@@ -12,17 +12,15 @@
   <script>
     const { ref, effect } = vue
 
-    const obj = ref({
-      name: 'Huy',
-    })
+    const obj = ref('Huy')
 
     // effect 功能测试
     effect(() => {
-      document.querySelector('#app').innerText = obj.value.name // 添加执行函数，触发 Getter 依赖收集
+      document.querySelector('#app').innerText = obj.value // 添加执行函数，触发 Getter 依赖收集
     })
 
     setTimeout(() => {
-      obj.value.name = 'huy'
+      obj.value = 'huy'
     }, 2000)
   </script>
 </html>
