@@ -8,6 +8,12 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <div>
+      <div>多个依赖</div>
+      <div id="p1"></div>
+      <div id="p2"></div>
+    </div>
   </body>
   <script>
     const { reactive, effect } = vue
@@ -24,7 +30,15 @@
 
     // effect 功能测试
     effect(() => {
-      document.querySelector('#app').innerText = obj.name
+      document.querySelector('#app').innerText = obj.name // 添加执行函数，触发 Getter 依赖收集
+    })
+
+    // 多个依赖测试
+    effect(() => {
+      document.querySelector('#p1').innerText = obj.name
+    })
+    effect(() => {
+      document.querySelector('#p2').innerText = obj.name
     })
 
     setTimeout(() => {

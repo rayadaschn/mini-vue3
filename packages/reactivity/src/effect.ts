@@ -1,6 +1,12 @@
-type KeyToDepMap = Map<any, ReactiveEffect>
+import { isArray } from 'shared/src'
+import { Dep, createDep } from './dep'
 
-export let activeEffect: ReactiveEffect | undefined
+type KeyToDepMap = Map<any, Dep>
+
+/**
+ * @description: 检测是否添加 effect 响应回调函数
+ */
+export let activeEffect: ReactiveEffect | undefined = undefined
 
 /**
  * @description: 收集所有依赖的 WeakMap 实例
@@ -17,7 +23,8 @@ const targetMap = new WeakMap<any, KeyToDepMap>()
  * @return {*}
  */
 export function track(target: object, key: unknown) {
-  if (!activeEffect) return // 若当前不存在执行函数，则直接 return
+  // 若当前不存在执行函数，则直接 return，如在添加执行函数前访问，则直接跳过。
+  if (!activeEffect) return
 
   // 尝试从 targetMap 中，根据 target 获取 map
   let depsMap = targetMap.get(target)
@@ -27,8 +34,22 @@ export function track(target: object, key: unknown) {
     targetMap.set(target, (depsMap = new Map()))
   }
 
+  let dep = depsMap.get(key)
+  if (!dep) {
+    depsMap.set(key, (dep = createDep()))
+  }
+
+  trackEffects(dep)
   // 为指定 map, 指定 key 设置回调函数
-  depsMap.set(key, activeEffect)
+  // depsMap.set(key, activeEffect)
+}
+
+/**
+ * @description: 利用 dep 一次跟踪指定 key 的所有 effect
+ * @return {*}
+ */
+export function trackEffects(dep: Dep) {
+  dep.add(activeEffect!)
 }
 
 /**
@@ -43,12 +64,37 @@ export function trigger(target: object, key: unknown, newValue: unknown) {
 
   if (!depsMap) return // 若无触发依赖, 则直接 return
 
-  const effect = depsMap.get(key) as ReactiveEffect
+  // const effect = depsMap.get(key) as ReactiveEffect
+  const dep: Dep | undefined = depsMap.get(key)
 
-  if (!effect) return // 若该无该属性的依赖触发函数, 则也直接 return
+  if (!dep) return // 若该无该属性的依赖触发函数, 则也直接 return
 
-  effect.run() // 存在触发函数, 则执行
+  triggerEffects(dep)
+  // effect.run() // 存在触发函数, 则执行
   console.log('触发依赖函数', target, key, newValue)
+}
+
+/**
+ * @description: 依次触发 dep 中保存的依赖
+ * @param {Dep} dep
+ * @return {*}
+ */
+export function triggerEffects(dep: Dep) {
+  const effects = isArray(dep) ? dep : [...dep]
+
+  // 依次触发依赖
+  for (const effect of effects) {
+    triggerEffect(effect)
+  }
+}
+
+/**
+ * @description: 触发指定依赖
+ * @param {ReactiveEffect} effect
+ * @return {*}
+ */
+export function triggerEffect(effect: ReactiveEffect) {
+  effect.run()
 }
 
 export function effect<T = any>(fn: () => T) {
@@ -60,7 +106,7 @@ export function effect<T = any>(fn: () => T) {
 export class ReactiveEffect<T = any> {
   constructor(public fn: () => T) {}
   run() {
-    activeEffect = this
+    activeEffect = this as ReactiveEffect<any>
     return this.fn()
   }
 }
