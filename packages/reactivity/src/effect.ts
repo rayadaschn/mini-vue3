@@ -1,4 +1,4 @@
-import { isArray } from 'shared/src'
+import { isArray } from 'shared'
 import { Dep, createDep } from './dep'
 
 type KeyToDepMap = Map<any, Dep>
