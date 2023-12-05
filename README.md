@@ -1,6 +1,11 @@
 # mini-react
 
-手写 Vue3 源码
+[![Author: Huy](https://img.shields.io/badge/Author-Huy-yellow)](https://github.com/rayadaschn)
+[![License](https://img.shields.io/badge/LICENSE-CC--BY--SA--4.0-yellow)](https://creativecommons.org/licenses/by-sa/4.0/)
+
+---
+
+手写 Vue3 源码: 😊 monorepo + 🚀 rollup + 🤘 Typescript
 
 - [x] 实现 reactive 复杂类型响应性
 - [x] 实现 ref 复杂类型响应性
