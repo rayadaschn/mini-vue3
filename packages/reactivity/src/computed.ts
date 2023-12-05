@@ -33,7 +33,7 @@ export class ComputedRefImpl<T = unknown> {
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {
         this._dirty = true
-        triggerRefValue(this)
+        triggerRefValue(this) // 调度器触发
       }
     })
     this.effect.computed = this

@@ -85,9 +85,19 @@ export function trigger(target: object, key: unknown, newValue: unknown) {
 export function triggerEffects(dep: Dep) {
   const effects = isArray(dep) ? dep : [...dep]
 
-  // 依次触发依赖
+  // 依次触发依赖: 俩个 for 循环先执行计算属性的 trigger 再触发非计算属性的 trigger
+  // 原因在于，若是计算属性的 trigger 在后面执行，则由于 dirty 的改变可能导致死循环出现
+  // 通过调用两次 for 循环，让计算属性的 trigger 都在前面执行，避免产生 bug
   for (const effect of effects) {
-    triggerEffect(effect)
+    if (effect.computed) {
+      triggerEffect(effect)
+    }
+  }
+
+  for (const effect of effects) {
+    if (!effect.computed) {
+      triggerEffect(effect)
+    }
   }
 }
 
@@ -110,11 +120,16 @@ export function effect<T = any>(fn: () => T) {
   _effect.run()
 }
 
+/**
+ * @description: 响应式触发依赖
+ * @param {function} fn
+ * @param {EffectScheduler | null} scheduler 调度器, 对应执行 computed 响应依赖
+ */
 export class ReactiveEffect<T = any> {
   public computed?: ComputedRefImpl<T>
   constructor(
     public fn: () => T,
-    public scheduler: EffectScheduler | null = null, // 调度器
+    public scheduler: EffectScheduler | null = null, // 调度器，若存在则执行 computed 响应依赖
   ) {}
   run() {
     activeEffect = this as ReactiveEffect<any>

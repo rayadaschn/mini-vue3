@@ -8,6 +8,7 @@
   </head>
   <body>
     <div id="app"></div>
+    <div id="app2"></div>
   </body>
   <script>
     const { reactive, computed, effect } = vue
@@ -17,12 +18,14 @@
     })
 
     const computedObj = computed(() => {
+      console.log('计算属性开始执行')
       return `my name is ${obj.name}`
     })
 
     // effect 功能测试
     effect(() => {
       document.querySelector('#app').innerText = computedObj.value // 添加执行函数，触发 Getter 依赖收集
+      document.querySelector('#app2').innerText = computedObj.value // 两次使用，理应触发缓存
     })
 
     setTimeout(() => {
