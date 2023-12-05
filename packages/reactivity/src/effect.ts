@@ -5,6 +5,10 @@ import { ComputedRefImpl } from './computed'
 type KeyToDepMap = Map<any, Dep>
 
 export type EffectScheduler = (...args: any[]) => any
+export interface ReactiveEffectOptions {
+  lazy?: boolean
+  scheduler?: EffectScheduler
+}
 
 /**
  * @description: 检测是否添加 effect 响应回调函数
@@ -114,10 +118,12 @@ export function triggerEffect(effect: ReactiveEffect) {
   }
 }
 
-export function effect<T = any>(fn: () => T) {
+export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions) {
   const _effect = new ReactiveEffect(fn)
 
-  _effect.run()
+  if (!options || !options.lazy) {
+    _effect.run()
+  }
 }
 
 /**
@@ -135,4 +141,6 @@ export class ReactiveEffect<T = any> {
     activeEffect = this as ReactiveEffect<any>
     return this.fn()
   }
+
+  stop() {}
 }

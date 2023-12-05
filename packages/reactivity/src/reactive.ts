@@ -49,3 +49,11 @@ function createReactiveObject(
 export const toReactive = <T>(value: T): T => {
   return isObject(value) ? reactive(value as object) : value
 }
+
+/**
+ * @description: 判断是否为 reactive 响应式
+ * @return {boolean}
+ */
+export function isReactive(value: any): boolean {
+  return !!(value && value[ReactiveFlags.IS_REACTIVE])
+}

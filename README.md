@@ -10,7 +10,8 @@
 - [x] 实现 reactive 复杂类型响应性
 - [x] 实现 ref 复杂类型响应性
 - [x] 实现 ref 简单数据类型响应性
-- [ ] 实现 computed
+- [x] 实现 computed 响应性
+- [ ] watch 数据监听器
 
 ## 关键点
 
@@ -27,7 +28,7 @@ ref 同 reactive 的区别在于，ref 能够实现简单数据类型的响应�
 
 在 computed 中引入 dirty 脏状态，表示数据发生了变化，需要进行重新渲染的状态。这个脏标志有助于优化性能，因为 Vue 不会在每次数据变化时立即进行重新渲染，而是在下一个事件循环中进行。这样，如果多个数据变化在同一个事件循环中发生，Vue 可以将它们合并为一次更新，减少不必要的重复渲染。
 
-实现重点:
+实现关键:
 
 - 计算属性的本质也是一个 ComputedRefImpl 的实例
 - 在 ComputedRefImpl 中通过 dirty 变量来控制 run 的执行和 triggerRefValue 的触发
@@ -36,9 +37,11 @@ ref 同 reactive 的区别在于，ref 能够实现简单数据类型的响应�
 - 在依赖触发时，必须先触发 computed 的 effect，再触发非 computed 的 effect。即:
 
   ```js
-  // 依次触发依赖，俩个 for 循环先执行计算属性的 trigger 再触发非计算属性的 trigger
-  // 原因在于，若是计算属性的 trigger 在后面执行，则由于 dirty 的改变可能导致死循环出现
-  // 通过调用两次 for 循环，让计算属性的 trigger 都在前面执行，避免产生 bug
+  /**
+   * 依次触发依赖，俩个 for 循环先执行计算属性的 trigger 再触发非计算属性的 trigger
+   * 原因在于，若是计算属性的 trigger 在后面执行，则由于 dirty 的改变可能导致死循环出现
+   * 通过调用两次 for 循环，让计算属性的 trigger 都在前面执行，避免产生 bug
+   */
   for (const effect of effects) {
     if (effect.computed) {
       triggerEffect(effect)
@@ -51,3 +54,7 @@ ref 同 reactive 的区别在于，ref 能够实现简单数据类型的响应�
     }
   }
   ```
+
+### watch
+
+Scheduler 调度器整体分为两块：控制执行顺序和控制执行规则。此外，它还依赖一个 lazy 的懒执行的规则，用了控制是否执行 effect 副作用。

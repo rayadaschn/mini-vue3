@@ -1,4 +1,4 @@
-export { reactive } from './src/reactive'
-export { ref } from './src/ref'
-export { effect } from './src/effect'
-export { computed } from './src/computed'
+export * from './src/reactive'
+export * from './src/ref'
+export * from './src/effect'
+export * from './src/computed'
