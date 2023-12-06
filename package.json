@@ -4,7 +4,7 @@
   "description": "手写 Vue3 源码",
   "main": "index.js",
   "scripts": {
-    "dev": "rollup -w --bundleConfigAsCjs --config scripts/rollup/vue.config.js ",
+    "dev": "rollup --bundleConfigAsCjs -w  --config scripts/rollup/vue.config.js ",
     "lint:fix": "eslint ./packages --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "pnpm lint:format && pnpm lint:fix ",

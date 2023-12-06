@@ -29,11 +29,11 @@ export function doWatch(
   // 触发 getter 函数
   let getter: () => any
 
-  // 判断 source 的数据类型
+  // 监听判断 source 的数据类型
   if (isReactive(source)) {
     // 指定 getter
     getter = () => source
-    // 深度
+    // 深度置为 true
     deep = true
   } else {
     getter = () => {}
@@ -41,14 +41,15 @@ export function doWatch(
 
   // 存在回调函数和deep
   if (cb && deep) {
-    // TODO
-    const baseGetter = getter
-    getter = () => traverse(baseGetter())
+    const baseGetter = getter // 浅拷贝
+    getter = () => {
+      return traverse(baseGetter())
+    } // 依赖收集
   }
 
   // 旧值
   let oldValue = {}
-  // job 执行方法
+  // job 执行方法 ->> watch 执行
   const job = () => {
     if (cb) {
       // watch(source, cb)
@@ -81,7 +82,7 @@ export function doWatch(
 }
 
 /**
- * 依次执行 getter，从而触发依赖收集
+ * 遍历所有 source：依次执行 getter，从而触发依赖收集
  */
 export function traverse(value: unknown, seen?: Set<unknown>) {
   if (!isObject(value)) {
