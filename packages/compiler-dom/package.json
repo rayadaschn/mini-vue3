@@ -1,7 +1,7 @@
 {
-  "name": "shared",
+  "name": "compiler-dom",
   "version": "1.0.0",
-  "description": "共享模块",
+  "description": "浏览器编译模块",
   "module": "index.ts",
   "dependencies": {},
   "scripts": {
