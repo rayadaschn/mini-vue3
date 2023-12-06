@@ -1,3 +1,1 @@
-# rumtime-dom
-
-浏览器运行时模块
+# rumtime-dom浏览器运行时模块
