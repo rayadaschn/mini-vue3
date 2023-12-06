@@ -11,7 +11,9 @@
 - [x] 实现 ref 复杂类型响应性
 - [x] 实现 ref 简单数据类型响应性
 - [x] 实现 computed 响应性
-- [ ] watch 数据监听器
+- [x] watch 数据监听器
+- [ ] h 函数
+- [ ] render 函数
 
 ## 关键点
 
@@ -60,3 +62,30 @@ ref 同 reactive 的区别在于，ref 能够实现简单数据类型的响应�
 Scheduler 调度器整体分为两块：控制执行顺序和控制执行规则（类似 Promise 具备异步执行功能）。此外，它还依赖一个 lazy 的懒执行的规则，用了控制是否执行 effect 副作用。
 
 - 区别于 reactive 等响应性，watch 的依赖收集需要主动进行收集
+
+### h 函数
+
+`h` 函数是用于**创建**虚拟节点（Virtual Node）的函数，它是“hyperscript”的缩写。虚拟节点是一个轻量级的 JavaScript 对象，表示 DOM 中的节点结构。Vue3 使用虚拟节点来描述组件的结构，然后通过虚拟节点生成实际的 DOM 元素。
+
+```js
+// 导入 createApp 函数
+import { createApp, h } from 'vue'
+
+// 创建一个简单的组件
+const MyComponent = {
+  render() {
+    // 使用 h 函数创建虚拟节点
+    return h('div', { class: 'my-component' }, 'Hello, Vue 3!')
+  },
+}
+
+// 创建应用程序
+const app = createApp(MyComponent)
+
+// 挂载应用程序到 DOM 元素
+app.mount('#app')
+```
+
+### render 函数
+
+`render` 函数是**渲染函数**： `render` 函数是一个特殊的函数，用于生成虚拟 DOM。它接收一个上下文对象作为参数，通常包含组件的状态、属性等信息。`render` 函数的目标是返回一个虚拟节点，描述了组件的结构。`h` 函数通常在 `render` 函数中使用，用于创建虚拟节点。
