@@ -1,3 +1,1 @@
-# reactivity
-
-响应器核心
+# reactivity响应器核心

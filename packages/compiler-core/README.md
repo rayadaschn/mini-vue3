@@ -1,3 +1,1 @@
-# compiler-core
-
-编辑器核心
+# compiler-core编辑器核心

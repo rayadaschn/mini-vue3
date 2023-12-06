@@ -1,13 +1,1 @@
-{
-  "name": "reactivity",
-  "version": "1.0.0",
-  "description": "响应器核心",
-  "module": "index.ts",
-  "dependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
-}
+{  "name": "reactivity",  "version": "1.0.0",  "description": "响应器核心",  "module": "index.ts",  "dependencies": {},  "scripts": {    "test": "echo \"Error: no test specified\" && exit 1"  },  "keywords": [],  "author": "",  "license": "ISC"}
