@@ -17,13 +17,19 @@
     })
 
     // watch 功能测试
-    watch(obj, (newVal, oldVal) => {
-      console.log('watch 监听被触发')
-      console.log('newVal', newVal)
-    })
+    watch(
+      obj,
+      (newVal, oldVal) => {
+        console.log('watch 监听被触发')
+        console.log('newVal', newVal)
+      },
+      {
+        immediate: true,
+      },
+    )
 
     setTimeout(() => {
-      obj.value = 'huy'
+      obj.name = 'huy'
     }, 2000)
   </script>
 </html>
