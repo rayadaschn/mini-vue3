@@ -33,6 +33,7 @@ export function h(
   } else {
     // 若用户传递了三个或以上的参数，那么证明第二个参数一定代表了 props
     if (l > 3) {
+      // eslint-disable-next-line prefer-rest-params
       children = Array.prototype.slice.call(arguments, 2)
     }
     // 如果传递的参数只有三个，则 children 是单纯的 children
