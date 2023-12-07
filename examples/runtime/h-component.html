@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>h-component</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h } = vue
+
+    const component = {
+      render() {
+        const vNode = h(
+          'div',
+          {
+            class: 'test',
+          },
+          [h('p', 'p1'), h('p', 'p2'), h('p', 'p3')],
+        )
+        return vNode
+      },
+    }
+
+    const vnodeFather = h(component)
+
+    console.log('vnodeFather', vnodeFather)
+  </script>
+</html>

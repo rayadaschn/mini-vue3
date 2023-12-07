@@ -1,5 +1,13 @@
 import { ShapeFlags, isArray, isFunction, isObject, isString } from 'shared'
 
+export const Fragment = Symbol('Fragment')
+export const Text = Symbol('Text')
+export const Comment = Symbol('Comment')
+
+interface classObject {
+  [key: string]: any
+}
+
 /**
  * @description: VNode 类型
  */
@@ -29,7 +37,15 @@ export function isVNode(value: any): value is VNode {
  * @returns vnode 对象
  */
 export function createVNode(type: any, props: any, children?: any): VNode {
-  // 1. 二进制处理 shapeFlag 类型
+  // 1. 对 props 属性(class 和 style)进行增强处理
+  if (props) {
+    const { class: klass } = props
+    if (klass && !isString(klass)) {
+      props.class = normalizeClass(klass)
+    }
+  }
+
+  // 2. 二进制处理 shapeFlag 类型
   let shapeFlag: number
   if (isString(type)) {
     shapeFlag = ShapeFlags.ELEMENT
@@ -60,8 +76,42 @@ function createBaseVNode(
   } as VNode
 
   normalizeChildren(vnode, children)
-
   return vnode
+}
+
+/**
+ * @description: 对 class 进行增强处理
+ * @param {unknown} val
+ * @return {string}
+ */
+export function normalizeClass(val: unknown): string {
+  let res = ''
+
+  if (isString(val)) {
+    // 判断是否为 string，如果是 string 就不需要专门处理
+    res = val
+  } else if (isArray(val)) {
+    // 判断为数组，进行循环增强遍历
+    for (let i = 0; i < val.length; i++) {
+      const normalized = normalizeClass(val[i])
+      if (normalized) {
+        res += normalized + ' ' // 空格分割
+      }
+    }
+  } else if (isObject(val)) {
+    // 判断为对象，依次进行遍历进行增强处理
+    for (const name in val as classObject) {
+      if (Object.prototype.hasOwnProperty.call(val, name)) {
+        if ((val as classObject)[name]) {
+          // 对该值进行判断, 为 true 才加入
+          res += name + ' ' // 空格分割
+        }
+      }
+    }
+  }
+
+  // 去除左右空格
+  return res.trim()
 }
 
 /**
