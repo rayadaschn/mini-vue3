@@ -46,12 +46,11 @@ function baseCreateRenderer(options: RendererOptions): any {
     anchor: any,
   ) => {
     if (oldVNode == null) {
-      mountElement(newVNode, container, anchor) // 挂载
+      mountElement(newVNode, container, anchor) // 挂载创建
     } else {
       // TODO: 更新操作
     }
   }
-  console.log('processElement', processElement)
 
   /**
    * @description: element 的挂载操作
@@ -96,6 +95,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     hostInsert(el, container, anchor)
   }
 
+  /** 打补丁操作 */
   const patch = (
     oldVNode: any,
     newVNode: { type: any; shapeFlag: any },
@@ -115,7 +115,6 @@ function baseCreateRenderer(options: RendererOptions): any {
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
-          // TODO
           processElement(oldVNode, newVNode, container, anchor)
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
           // TODO
