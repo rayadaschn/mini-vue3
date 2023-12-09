@@ -1,5 +1,5 @@
 /**
- * 为 class 打补丁
+ * 为 class 类打补丁
  */
 export function patchClass(el: Element, value: string | null) {
   if (value == null) {

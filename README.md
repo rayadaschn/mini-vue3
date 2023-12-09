@@ -101,3 +101,21 @@ app.mount('#app')
 ### render 函数
 
 `render` 函数是**渲染函数**： `render` 函数是一个特殊的函数，用于生成虚拟 DOM。它接收一个上下文对象作为参数，通常包含组件的状态、属性等信息。`render` 函数的目标是返回一个虚拟节点，描述了组件的结构。`h` 函数通常在 `render` 函数中使用，用于创建虚拟节点。
+
+实际过程:
+
+在 `h` 函数创建好 VNode 后，会将其与上一次渲染时生成的 VNode 进行比较，找出两者之间的差异。这个过程称为虚拟 DOM 的补丁（patch）过程，负责更新实际 DOM 以反映新的状态。
+
+> 若 VNode 为 null 则是卸载
+
+patch 补丁操作过程：
+
+1. 判断 newVNode 的类型进行不同的操作;
+2. 若是普通文本则对 oldVNode 进行判断是否为空，若为空则进行 Element 的挂载操作，否则为更新；
+
+挂载 mountElement 过程:
+
+1. 创建 Element 元素
+2. 若为文本则设置Element 元素的文本或设置 Array 子节点
+3. 对 Element 元素设置 props 属性： 遍历 props 对象
+4. 将 Element 元素插入到指定位置
