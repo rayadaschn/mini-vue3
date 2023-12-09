@@ -10,7 +10,7 @@
     <div id="app"></div>
   </body>
   <script>
-    const { h } = vue
+    const { h, render } = vue
 
     const vNode = h(
       'div',
@@ -21,5 +21,7 @@
     )
 
     console.log('vNode', vNode)
+
+    render(vNode, document.querySelector('#app'))
   </script>
 </html>
