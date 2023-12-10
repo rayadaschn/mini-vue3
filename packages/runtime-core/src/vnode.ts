@@ -18,6 +18,7 @@ export interface VNode {
   props: any
   children: any
   shapeFlag: number
+  parentNode?: any
 }
 
 /**
@@ -140,4 +141,14 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
 
   // 按位赋值
   vnode.shapeFlag |= type
+}
+
+/**
+ * @description: 简单区分是否为同类型节点: 依据 key 和 type
+ * @param {VNode} n1
+ * @param {VNode} n2
+ * @return {boolean}
+ */
+export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
+  return n1.type === n2.type && n1.key === n2.key
 }

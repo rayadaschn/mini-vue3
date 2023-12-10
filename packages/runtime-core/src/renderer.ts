@@ -1,5 +1,5 @@
 import { EMPTY_OBJ, ShapeFlags } from 'shared'
-import { Comment, Fragment, Text } from './vnode'
+import { Comment, Fragment, Text, VNode, isSameVNodeType } from './vnode'
 
 /** 渲染器配置对象 */
 export interface RendererOptions {
@@ -14,6 +14,9 @@ export interface RendererOptions {
 
   /** 创建指定的 Element */
   createElement(type: any): Element
+
+  /** 卸载指定 DOM */
+  remove(el: any): void
 }
 
 /** 对外暴露的创建渲染器的方法 */
@@ -34,6 +37,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     patchProp: hostPatchProp,
     createElement: hostCreateElement,
     setElementText: hostSetElementText,
+    remove: hostRemove,
   } = options
 
   /**
@@ -211,11 +215,17 @@ function baseCreateRenderer(options: RendererOptions): any {
   /** 打补丁操作 main */
   const patch = (
     oldVNode: any,
-    newVNode: { type: any; shapeFlag: any },
+    newVNode: any,
     container: any,
     anchor = null,
   ) => {
     if (oldVNode === newVNode) return // 未更新
+
+    // 简单判断是否为同类型节点: 若不是则先卸载旧节点
+    if (oldVNode && !isSameVNodeType(oldVNode, newVNode)) {
+      unmount(oldVNode)
+      oldVNode = null
+    }
 
     const { type, shapeFlag } = newVNode
 
@@ -238,14 +248,22 @@ function baseCreateRenderer(options: RendererOptions): any {
   }
 
   /**
+   * @description: 卸载节点
+   * @param {VNode} vnode
+   */
+  const unmount = (vnode: any) => {
+    hostRemove(vnode.el!)
+  }
+
+  /**
    * @description: 待导出的 render 渲染函数
    */
-  const render = (
-    vnode: { type: any; shapeFlag: any } | null,
-    container: { _vnode: any },
-  ) => {
+  const render = (vnode: VNode | null, container: { _vnode: VNode | null }) => {
     if (vnode == null) {
-      // TODO: 卸载
+      // 虚拟节点为空，则直接卸载
+      if (container._vnode) {
+        unmount(container._vnode)
+      }
     } else {
       // 打补丁（包括了挂载和更新）
       patch(container._vnode || null, vnode, container)
