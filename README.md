@@ -7,15 +7,17 @@
 
 手写 Vue3 源码: 😊 monorepo + 🚀 rollup + 🤘 Typescript
 
-- [x] 实现 reactive 复杂类型响应性
-- [x] 实现 ref 复杂类型响应性
-- [x] 实现 ref 简单数据类型响应性
-- [x] 实现 computed 响应性
-- [x] watch 数据监听器
-- [x] h 函数
-- [ ] render 函数
+Project D 目标：最精简的 Vue3 实现，最小拆分，逐行注释，彻底理清 Vue3 运行逻辑。
 
-## 关键点
+- [x] 实现 reactive 复杂类型响应性
+- [x] 实现 ref 复杂类型响应性 & 简单数据类型响应性
+- [x] 实现 computed 响应性
+- [x] 实现 watch 数据监听器
+- [x] 实现 h 函数
+- [ ] 实现 render 渲染函数
+- [ ] 详细文档注解（待完成 ing）
+
+## 关键点-整体脉络梳理
 
 ### ref 和 reactive 实现
 
