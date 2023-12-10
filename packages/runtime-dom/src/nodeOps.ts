@@ -1,5 +1,7 @@
 // 对应 vue3 源码: https://github.com/vuejs/core/blob/main/packages/runtime-dom/src/nodeOps.ts
 
+import { VNode } from 'runtime-core'
+
 /**
  * @description: 操作 DOM 元素的方法
  */
@@ -19,5 +21,13 @@ export const nodeOps = {
   /** 为指定的 element 设置 textContent */
   setElementText: (el: Element, text: string) => {
     el.textContent = text
+  },
+
+  /** 卸载指定 DOM 元素 */
+  remove: (child: VNode) => {
+    const parent = child.parentNode
+    if (parent) {
+      parent.removeChild(child)
+    }
   },
 }
