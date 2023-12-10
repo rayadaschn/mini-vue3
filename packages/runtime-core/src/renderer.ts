@@ -1,4 +1,4 @@
-import { ShapeFlags } from 'shared'
+import { EMPTY_OBJ, ShapeFlags } from 'shared'
 import { Comment, Fragment, Text } from './vnode'
 
 /** 渲染器配置对象 */
@@ -37,7 +37,7 @@ function baseCreateRenderer(options: RendererOptions): any {
   } = options
 
   /**
-   * @description: Element 的打补丁操作
+   * @description: Element 打补丁的处理过程
    */
   const processElement = (
     oldVNode: null,
@@ -46,9 +46,11 @@ function baseCreateRenderer(options: RendererOptions): any {
     anchor: any,
   ) => {
     if (oldVNode == null) {
-      mountElement(newVNode, container, anchor) // 挂载创建
+      // 挂载创建
+      mountElement(newVNode, container, anchor)
     } else {
-      // TODO: 更新操作
+      // 更新操作
+      patchElement(oldVNode, newVNode)
     }
   }
 
@@ -95,7 +97,118 @@ function baseCreateRenderer(options: RendererOptions): any {
     hostInsert(el, container, anchor)
   }
 
-  /** 打补丁操作 */
+  /**
+   * @description: Element 的更新操作
+   */
+  const patchElement = (oldVNode: any, newVNode: any) => {
+    // 获取指定的 el
+    const el = (newVNode.el = oldVNode.el!)
+
+    // 新旧 props
+    const oldProps = oldVNode.props || EMPTY_OBJ
+    const newProps = newVNode.props || EMPTY_OBJ
+
+    // 更新子节点
+    patchChildren(oldVNode, newVNode, el, null)
+
+    // TODO: 更新 props
+    patchProps(el, newVNode, oldProps, newProps)
+  }
+
+  /**
+   * @description: 为子节点打补丁
+   */
+  const patchChildren = (
+    oldVNode: any,
+    newVNode: any,
+    container: Element,
+    anchor: null,
+  ) => {
+    // 1. 获取新旧节点的 children 和 shapeFlag
+    const c1 = oldVNode && oldVNode.children // 旧节点的 children
+    const prevShapeFlag = oldVNode ? oldVNode.shapeFlag : 0 // 旧节点的 prevShapeFlag
+
+    const c2 = newVNode.children // 新节点的 children
+    const { shapeFlag } = newVNode // 新节点的 shapeFlag
+
+    // 2. 对新子节点进行条件判断
+    // 2.1 新子节点为 TEXT_CHILDREN
+    if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      // 2.1.1 旧子节点为 ARRAY_CHILDREN --> 卸载旧节点
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // TODO: 卸载旧子节点
+      }
+
+      // 2.1.2 旧节点不为数组，但新旧子节点不同 --> 挂载更新文本
+      if (c2 !== c1) {
+        // 挂载新子节点的文本
+        hostSetElementText(container, c2 as string)
+      }
+    } else {
+      // 2.2 新子节点不为 TEXT_CHILDREN
+
+      // 2.2.1 旧子节点为 ARRAY_CHILDREN
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // A. 新子节点也为 ARRAY_CHILDREN
+        if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+          // diff 运算 对比
+          // TODO
+          console.log('diff 算法对比, anchor 为:', anchor)
+        } else {
+          // B. 新子节点不为 ARRAY_CHILDREN，则直接卸载旧子节点
+          // TODO: 卸载
+        }
+      }
+
+      // 2.2.2 旧子节点为不为 ARRAY_CHILDREN
+      else {
+        // A. 旧子节点为 TEXT_CHILDREN
+        if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+          // 删除旧的文本
+          hostSetElementText(container, '')
+        }
+
+        // B. 新子节点为 ARRAY_CHILDREN
+        if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+          // TODO: 单独挂载新子节点操作
+        }
+      }
+    }
+  }
+
+  /**
+   * @description: 为 props 打补丁
+   */
+  const patchProps = (
+    el: Element,
+    _vnode: any,
+    oldProps: { readonly [x: string]: any },
+    newProps: { [x: string]: any },
+  ) => {
+    // 新旧 props 不相同时才进行处理
+    if (oldProps !== newProps) {
+      // 遍历新的 props，依次触发 hostPatchProp ，赋值新属性
+      for (const key in newProps) {
+        const next = newProps[key]
+        const prev = oldProps[key]
+        if (next !== prev) {
+          hostPatchProp(el, key, prev, next)
+        }
+      }
+
+      // 若存在旧的 props，遍历剔除新 props 中不存在的旧属性
+      if (oldProps !== EMPTY_OBJ) {
+        // 遍历旧的 props，依次触发 hostPatchProp ，删除不存在于新 props 中的旧属性
+        for (const key in oldProps) {
+          if (!(key in newProps)) {
+            hostPatchProp(el, key, oldProps[key], null)
+          }
+        }
+      }
+    }
+  }
+
+  /** 打补丁操作 main */
   const patch = (
     oldVNode: any,
     newVNode: { type: any; shapeFlag: any },

@@ -119,3 +119,32 @@ patch 补丁操作过程：
 2. 若为文本则设置Element 元素的文本或设置 Array 子节点
 3. 对 Element 元素设置 props 属性： 遍历 props 对象
 4. 将 Element 元素插入到指定位置
+
+更新 patchElement 过程。分为 patchChildren 更新子节点和 patchProps 更新节点 Props 属性两个过程:
+
+- patchChildren 更新子节点：
+
+  1. 提取新旧节点的 children 和 shapeFlag 开始对比：
+  2. 对新子节点进行条件判断：
+
+     1. 新子节点为 TEXT_CHILDREN
+
+        1. 旧子节点为 ARRAY_CHILDREN --> 卸载旧节点
+        2. 旧节点不为 ARRAY_CHILDREN，但新旧子节点不同 --> 挂载更新文本
+
+     2. 新子节点不为 TEXT_CHILDREN
+        1. 旧子节点为 ARRAY_CHILDREN
+           1. 新子节点也为 ARRAY_CHILDREN --> Diff 运算对比
+           2. 新子节点不为 ARRAY_CHILDREN --> 直接卸载旧子节点
+        2. 旧子节点为不为 ARRAY_CHILDREN
+           1. 旧子节点为 TEXT_CHILDREN --> 删除旧的文本
+           2. 新子节点为 ARRAY_CHILDREN --> 单独挂载新子节点操作
+
+  ![patchChildren](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202312101013876.png)
+
+- patchProps 更新节点 Props 属性：
+  新旧 props 不相同时才进行更新处理。
+
+  1. 对新旧 props 进行对比判断，若 props 相同则退出不继续更新；
+  2. 遍历新的 props，依次触发 hostPatchProp ，赋值新属性；
+  3. 若存在旧的 props，遍历剔除新 props 中不存在的旧属性。

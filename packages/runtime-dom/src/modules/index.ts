@@ -1,3 +1,5 @@
 export * from './patchClass'
 export * from './patchAttr'
 export * from './patchDOMProp'
+export * from './patchEvents'
+export * from './patchStyle'
