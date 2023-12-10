@@ -62,7 +62,7 @@ function baseCreateRenderer(options: RendererOptions): any {
    */
   const mountElement = (
     vnode: {
-      e?: any
+      el?: any
       children?: any
       type?: any
       props?: any
@@ -74,7 +74,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     const { type, props, shapeFlag } = vnode
 
     // 1. 创建 element
-    const el = (vnode.e = hostCreateElement(type))
+    const el = (vnode.el = hostCreateElement(type))
 
     if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
       // 2. 设置文本
@@ -177,7 +177,7 @@ function baseCreateRenderer(options: RendererOptions): any {
   }
 
   /**
-   * @description: 为 props 打补丁
+   * @description: 为 props 属性打补丁
    */
   const patchProps = (
     el: Element,
@@ -219,6 +219,7 @@ function baseCreateRenderer(options: RendererOptions): any {
 
     const { type, shapeFlag } = newVNode
 
+    // 虚拟节点类型判断
     switch (type) {
       case Text:
         break
@@ -236,6 +237,9 @@ function baseCreateRenderer(options: RendererOptions): any {
     }
   }
 
+  /**
+   * @description: 待导出的 render 渲染函数
+   */
   const render = (
     vnode: { type: any; shapeFlag: any } | null,
     container: { _vnode: any },
@@ -248,6 +252,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     }
     container._vnode = vnode
   }
+
   return {
     render,
   }

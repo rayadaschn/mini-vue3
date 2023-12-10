@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>h-element</title>
+    <title>render-element</title>
     <script src="../../dist/vue/index.js"></script>
   </head>
   <body>
     <div id="app"></div>
   </body>
   <script>
-    const { h } = vue
+    const { h, render } = vue
 
     const vNode = h(
       'div',
@@ -21,5 +21,7 @@
     )
 
     console.log('vNode', vNode)
+
+    render(vNode, document.querySelector('#app'))
   </script>
 </html>

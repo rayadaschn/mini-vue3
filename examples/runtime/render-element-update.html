@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-element-update</title>
+    <script src="../../dist/vue/index.js"></script>
+    <style>
+      .text {
+        color: blue;
+      }
+      .active {
+        color: pink;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, render } = vue
+
+    const vNode = h(
+      'div',
+      {
+        class: 'text',
+      },
+      'Hello Vue3',
+    )
+
+    render(vNode, document.querySelector('#app'))
+
+    setTimeout(() => {
+      const vNode = h(
+        'div',
+        {
+          class: 'active',
+        },
+        'Hello render',
+      )
+      render(vNode, document.querySelector('#app'))
+    }, 1500)
+  </script>
+</html>
