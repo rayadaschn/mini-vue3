@@ -1,9 +1,11 @@
 import { isArray, isString } from 'shared'
 
+type Style = string | Record<string, string | string[]> | null
+
 /**
  * 为 style 属性进行打补丁
  */
-export function patchStyle(el: Element, prev: unknown, next: any) {
+export function patchStyle(el: Element, prev: Style, next: Style) {
   // 获取 style 对象
   const style = (el as HTMLElement).style
 
