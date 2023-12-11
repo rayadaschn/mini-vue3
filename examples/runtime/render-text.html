@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-text</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, render, Text } = vue
+
+    const vNode = h(Text, 'Hello Vue3')
+
+    render(vNode, document.querySelector('#app'))
+
+    setTimeout(() => {
+      const vNode = h(Text, 'Hello render Text')
+      render(vNode, document.querySelector('#app'))
+    }, 1500)
+  </script>
+</html>

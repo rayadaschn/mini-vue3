@@ -18,6 +18,12 @@ export interface RendererOptions {
 
   /** 卸载指定 DOM */
   remove(el: any): void
+
+  /** 创建 Text 节点 */
+  createText(text: string): Text
+
+  /** 更新 Text 节点 */
+  setText(node: Element, text: string): void
 }
 
 /** 对外暴露的创建渲染器的方法 */
@@ -39,7 +45,34 @@ function baseCreateRenderer(options: RendererOptions): any {
     createElement: hostCreateElement,
     setElementText: hostSetElementText,
     remove: hostRemove,
+    createText: hostCreateText,
+    setText: hostSetText,
   } = options
+
+  /**
+   * @description: Text 的打补丁操作
+   */
+  const processText = (
+    oldVNode: VNode,
+    newVNode: VNode,
+    container: any,
+    anchor: any,
+  ) => {
+    // 不存在旧节点，则为 挂载 操作
+    if (oldVNode == null) {
+      // 生成节点
+      newVNode.el = hostCreateText(newVNode.children as string)
+      // 挂载
+      hostInsert(newVNode.el, container, anchor)
+    }
+    // 存在旧节点，则为 更新 操作
+    else {
+      const el = (newVNode.el = oldVNode.el!)
+      if (newVNode.children !== oldVNode.children) {
+        hostSetText(el, newVNode.children as string)
+      }
+    }
+  }
 
   /**
    * @description: Element 打补丁的处理过程
@@ -105,7 +138,7 @@ function baseCreateRenderer(options: RendererOptions): any {
   /**
    * @description: Element 的更新操作
    */
-  const patchElement = (oldVNode: any, newVNode: any) => {
+  const patchElement = (oldVNode: VNode, newVNode: VNode) => {
     // 获取指定的 el
     const el = (newVNode.el = oldVNode.el!)
 
@@ -463,6 +496,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     // 虚拟节点类型判断
     switch (type) {
       case Text:
+        processText(oldVNode, newVNode, container, anchor)
         break
       case Comment:
         break

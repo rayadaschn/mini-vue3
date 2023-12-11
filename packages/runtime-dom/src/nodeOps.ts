@@ -30,4 +30,12 @@ export const nodeOps = {
       parent.removeChild(child)
     }
   },
+
+  /** 创建 Text 节点 */
+  createText: (text: string): Text => document.createTextNode(text),
+
+  /** 更新 Text 节点 */
+  setText: (node: Element, text: string) => {
+    node.nodeValue = text
+  },
 }
