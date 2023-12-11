@@ -15,7 +15,8 @@ export interface VNode {
   __v_isVNode: true
   key: any
   type: any
-  props: any
+  props: { [x: string]: any }
+  el: Element
   children: any
   shapeFlag: number
   parentNode?: any

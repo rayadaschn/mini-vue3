@@ -6,7 +6,6 @@ import { VNode, createVNode, isVNode } from './vnode'
  * @param {any} type
  * @param {any} propsOrChildren
  * @param {any} children
- * @return {VNode}
  */
 export function h(
   type: any,

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-element-event</title>
+    <script src="../../dist/vue/index.js"></script>
+    <style></style>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, render } = vue
+
+    const vNode = h(
+      'button',
+      {
+        onClick() {
+          console.log('点击!')
+        },
+      },
+      '点击事件',
+    )
+
+    render(vNode, document.querySelector('#app'))
+  </script>
+</html>

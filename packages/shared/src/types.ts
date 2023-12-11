@@ -36,10 +36,11 @@ export const hasChanged = (val: any, oldVal: any): boolean => {
 }
 
 /**
- * @description: 判断字符串是否以 on 开头
+ * @description: 判断字符串是否以 on 开头 --> props 事件类型检查
  * @param {string} val
  */
 export const isOn = (val: string): boolean => {
-  const onReg = /^on[a-z]/
+  // 以 'on' 开头，后面不以小写字母开头
+  const onReg = /^on[^a-z]/
   return onReg.test(val)
 }
