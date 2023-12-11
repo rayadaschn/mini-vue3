@@ -1,4 +1,4 @@
-import { EMPTY_OBJ, ShapeFlags } from 'shared'
+import { EMPTY_OBJ, ShapeFlags, isString } from 'shared'
 import { Comment, Fragment, Text, VNode, isSameVNodeType } from './vnode'
 import { normalizeVNode } from './componentRenderUtils'
 
@@ -19,11 +19,14 @@ export interface RendererOptions {
   /** 卸载指定 DOM */
   remove(el: any): void
 
-  /** 创建 Text 节点 */
+  /** 创建 Text 文本节点 */
   createText(text: string): Text
 
   /** 更新 Text 节点 */
   setText(node: Element, text: string): void
+
+  /** 创建 Comment 注释节点 */
+  createComment(data: string): Comment
 }
 
 /** 对外暴露的创建渲染器的方法 */
@@ -47,10 +50,11 @@ function baseCreateRenderer(options: RendererOptions): any {
     remove: hostRemove,
     createText: hostCreateText,
     setText: hostSetText,
+    createComment: hostCreateComment,
   } = options
 
   /**
-   * @description: Text 的打补丁操作
+   * @description: Text 文本的打补丁操作
    */
   const processText = (
     oldVNode: VNode,
@@ -71,6 +75,46 @@ function baseCreateRenderer(options: RendererOptions): any {
       if (newVNode.children !== oldVNode.children) {
         hostSetText(el, newVNode.children as string)
       }
+    }
+  }
+
+  /**
+   * @description: Comment 注释的打补丁操作
+   */
+  const processCommentNode = (
+    oldVNode: VNode,
+    newVNode: VNode,
+    container: any,
+    anchor: any,
+  ) => {
+    // 不存在旧节点，则为 挂载 操作
+    if (oldVNode == null) {
+      // 生成节点
+      newVNode.el = hostCreateComment((newVNode.children as string) || '')
+      // 挂载
+      hostInsert(newVNode.el, container, anchor)
+    }
+    // 存在旧节点，则直接赋值，不存在更新操作
+    else {
+      newVNode.el = oldVNode.el
+    }
+  }
+
+  /**
+   * @description: Fragment 包裹节点的打补丁操作
+   */
+  const processFragment = (
+    oldVNode: VNode,
+    newVNode: VNode,
+    container: any,
+    anchor: any,
+  ) => {
+    if (oldVNode == null) {
+      // // 不存在旧节点，则直接挂载子节点
+      mountChildren(newVNode.children, container, anchor)
+    } else {
+      // 存在旧节点，则直接更新子节点
+      patchChildren(oldVNode, newVNode, container, anchor)
     }
   }
 
@@ -154,7 +198,22 @@ function baseCreateRenderer(options: RendererOptions): any {
   }
 
   /**
-   * @description: 为子节点打补丁
+   * @description: 挂载子节点
+   */
+  const mountChildren = (children: any, container: any, anchor: any) => {
+    // 简单处理 Cannot assign to read only property '0' of string 'xxx'
+    if (isString(children)) {
+      children = children.split('') // 将字符串转为数组
+    }
+    // 依次渲染各个子组件
+    for (let i = 0; i < children.length; i++) {
+      const child = (children[i] = normalizeVNode(children[i]))
+      patch(null, child, container, anchor)
+    }
+  }
+
+  /**
+   * @description: 更新子节点
    */
   const patchChildren = (
     oldVNode: any,
@@ -495,12 +554,15 @@ function baseCreateRenderer(options: RendererOptions): any {
 
     // 虚拟节点类型判断
     switch (type) {
-      case Text:
+      case Text: // Text 文本节点
         processText(oldVNode, newVNode, container, anchor)
         break
-      case Comment:
+      case Comment: // 注释节点: 非响应性，只有挂载没有更新逻辑
+        processCommentNode(oldVNode, newVNode, container, anchor)
         break
-      case Fragment:
+      case Fragment: // 用于包裹多个子节点而不引入额外的父节点。
+        // Fragment 节点不会在最终渲染的 DOM 中产生实际的父节点，只会将其包裹的子节点直接插入到父节点的位置。
+        processFragment(oldVNode, newVNode, container, anchor)
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {

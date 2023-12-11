@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-comment</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app">在开发者模式中查看注释</div>
+  </body>
+  <script>
+    const { h, render, Comment } = vue
+
+    const vNode = h(Comment, 'Hello Vue3 Comment')
+
+    render(vNode, document.querySelector('#app'))
+  </script>
+</html>
