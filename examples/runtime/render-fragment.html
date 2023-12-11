@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-Fragment</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, render, Fragment } = vue
+
+    // 第一次渲染，会将字符串拆为数组，然后依次渲染 'Hello Vue3'
+    const vNode = h(Fragment, 'Hello Vue3')
+
+    render(vNode, document.querySelector('#app'))
+
+    setTimeout(() => {
+      // 第二次，会更新渲染子节点
+      const vNode = h(Fragment, 'Hello render Fragment')
+      render(vNode, document.querySelector('#app'))
+    }, 5000)
+  </script>
+</html>

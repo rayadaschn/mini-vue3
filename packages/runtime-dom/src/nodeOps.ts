@@ -38,4 +38,7 @@ export const nodeOps = {
   setText: (node: Element, text: string) => {
     node.nodeValue = text
   },
+
+  /** 创建 Comment 注释节点 */
+  createComment: (data: string): Comment => document.createComment(data),
 }
