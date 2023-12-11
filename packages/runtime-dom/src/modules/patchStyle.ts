@@ -3,7 +3,10 @@ import { isArray, isString } from 'shared'
 type Style = string | Record<string, string | string[]> | null
 
 /**
- * 为 style 属性进行打补丁
+ * @description: 为 style 属性进行打补丁
+ * @param {Element} el
+ * @param {Style} prev
+ * @param {Style} next
  */
 export function patchStyle(el: Element, prev: Style, next: Style) {
   // 获取 style 对象

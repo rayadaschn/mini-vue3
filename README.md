@@ -150,3 +150,40 @@ patch 补丁操作过程：
   1. 对新旧 props 进行对比判断，若 props 相同则退出不继续更新；
   2. 遍历新的 props，依次触发 hostPatchProp ，赋值新属性；
   3. 若存在旧的 props，遍历剔除新 props 中不存在的旧属性。
+
+  为一个 DOM 设置对应 Props 属性(暂不考虑 event 等特殊属性)时，可以分为：`HTML Attributes` 和 `DOM Properties` 俩种情况。
+
+  - `HTML Attributes` 表示的是定义在 HTML 标签上的属性，是标记语言中的一部分。它们用于定义元素的初始值，但一旦页面加载完成，它们通常**不再改变**。
+
+    ```html
+    <!-- 这个 html 上的 「class="HTML-Attributes"」 为 HTML Attributes -->
+    <div class="HTML-Attributes"></div>
+    ```
+
+  - `DOM Properties` 表示的是 DOM 对象上的属性，是通过 JavaScript 在运行时对 DOM 元素进行操作和访问的。它们代表着当前文档中**元素的实时状态**。
+
+    ```js
+    // 获取一个 DOM 对象 el
+    const el = document.querySelector('textarea')
+    // 此时可以获取 DOM 对象 el 上的属性
+    console.log('class 属性': el.className) // className
+    console.log('type 属性': el.type) // textarea
+    console.log('value 属性': el.value) // 在 textarea 上的 value 值，这个 value 并不存在 HTML 的 Attributes 属性上
+    ```
+
+  - 俩者设置获取属性名的方式并不相同，有些也无法获取到对方的属性：
+
+    1. 如 class 的获取:
+       - HTML Attributes：`target.getAttribute('class')`
+       - DOM Properties：`target.className`
+    2. 如 type 的获取:
+       - HTML Attributes：`target.getAttribute('type')`
+       - DOM Properties：「无法获取」
+    3. 如 textarea 的 value 的获取:
+       - HTML Attributes：「无法获取」
+       - DOM Properties：`target.value`
+
+  - 效率也不同，以获取 class 属性为例，DOM 的获取效率要远高于 HTML 的原生获取（猜测原因是 HTML 上的属性比 DOM 的多的多）。
+  - 在 vue3 中组件通信里面也有 `props` (Properties)和 `attrs` (Attributes)俩种，其实同上面也是类似的
+
+  patchEvent 解析: TODO 解析 `_vei` 的作用。
