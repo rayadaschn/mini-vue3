@@ -1,6 +1,9 @@
 import { EMPTY_OBJ, ShapeFlags, isString } from 'shared'
 import { Comment, Fragment, Text, VNode, isSameVNodeType } from './vnode'
-import { normalizeVNode } from './componentRenderUtils'
+import { normalizeVNode, renderComponentRoot } from './componentRenderUtils'
+import { createComponentInstance, setupComponent } from './component'
+import { ReactiveEffect } from 'reactivity'
+import { queuePreFlushCb } from './scheduler'
 
 /** 渲染器配置对象 */
 export interface RendererOptions {
@@ -137,6 +140,21 @@ function baseCreateRenderer(options: RendererOptions): any {
   }
 
   /**
+   * @description: 组件的打补丁过程
+   */
+  const processComponent = (
+    oldVNode: null,
+    newVNode: VNode,
+    container: any,
+    anchor: any,
+  ) => {
+    if (oldVNode == null) {
+      // 挂载
+      mountComponent(newVNode, container, anchor)
+    }
+  }
+
+  /**
    * @description: element 的挂载操作
    * @param {*} vnode 新的虚拟节点
    * @param {*} container 容器
@@ -177,6 +195,58 @@ function baseCreateRenderer(options: RendererOptions): any {
 
     // 4. 插入 el 到指定为止
     hostInsert(el, container, anchor)
+  }
+
+  /**
+   * @description: Component 的挂载操作
+   * @param {*} initialVNode
+   * @param {*} container
+   * @param {*} anchor
+   * @return {*}
+   */
+  const mountComponent = (initialVNode: VNode, container: any, anchor: any) => {
+    // 生成组件实例
+    initialVNode.component = createComponentInstance(initialVNode)
+
+    // 浅拷贝, 绑定同一内存空间
+    const instance = initialVNode.component
+
+    // 标准化组件实例数据
+    setupComponent(instance)
+
+    // 组件渲染
+    setupRenderEffect(instance, initialVNode, container, anchor)
+  }
+
+  const setupRenderEffect = (
+    instance: any,
+    initialVNode: VNode,
+    container: any,
+    anchor: any,
+  ) => {
+    const componentUpdateFn = () => {
+      // 当前处于 mounted 之前，即执行 挂载 逻辑
+      if (!instance.isMounted) {
+        const subTree = (instance.subTree = renderComponentRoot(instance))
+
+        // 通过 patch 对 subTree，进行打补丁。即：渲染组件
+        patch(null, subTree, container, anchor)
+
+        // 把组件根节点的 el，作为组件的 el
+        initialVNode.el = subTree!.el
+      }
+    }
+
+    const effect = (instance.effect = new ReactiveEffect(
+      componentUpdateFn,
+      () => queuePreFlushCb(update),
+    ))
+
+    const update = (instance.update = () => effect.run())
+
+    update()
+
+    console.log(initialVNode, container, anchor)
   }
 
   /**
@@ -566,9 +636,11 @@ function baseCreateRenderer(options: RendererOptions): any {
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
+          // Element 节点挂载
           processElement(oldVNode, newVNode, container, anchor)
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
-          // TODO
+          // 组件 Component 挂载
+          processComponent(oldVNode, newVNode, container, anchor)
         }
         break
     }

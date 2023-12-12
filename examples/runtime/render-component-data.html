@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>render-component-data</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, render, Comment } = vue
+
+    const component = {
+      data() {
+        return {
+          msg: 'Hello Vue3 component',
+        }
+      },
+      render() {
+        return h('div', this.msg)
+      },
+    }
+
+    const vNode = h(component)
+
+    render(vNode, document.querySelector('#app'))
+  </script>
+</html>
