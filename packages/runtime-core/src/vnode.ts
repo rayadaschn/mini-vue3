@@ -20,6 +20,7 @@ export interface VNode {
   children: any
   shapeFlag: number
   parentNode?: any
+  component?: any
 }
 
 /**
