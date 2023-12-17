@@ -1,6 +1,7 @@
 import { isFunction, isObject } from 'shared'
 import { VNode } from './vnode'
 import { reactive } from 'reactivity'
+import { onBeforeMount, onMounted } from './apiLifecycle'
 
 export interface Instance {
   uid: number
@@ -16,6 +17,16 @@ export interface Instance {
   bm: null
   m: null
   data?: any
+}
+
+/**
+ * 生命周期钩子
+ */
+export enum LifecycleHooks {
+  BEFORE_CREATE = 'bc',
+  CREATED = 'c',
+  BEFORE_MOUNT = 'bm',
+  MOUNTED = 'm',
 }
 
 /** 唯一标记 */
@@ -105,7 +116,18 @@ export function finishComponentSetup(instance: Instance) {
 }
 
 function applyOptions(instance: any) {
-  const { data: dataOptions } = instance.type
+  const {
+    data: dataOptions,
+    beforeCreate,
+    created,
+    beforeMount,
+    mounted,
+  } = instance.type
+
+  // 处理生命周期钩子函数
+  if (beforeCreate) {
+    callHook(beforeCreate, instance.data)
+  }
 
   // 存在 data 选项时
   if (dataOptions) {
@@ -117,4 +139,29 @@ function applyOptions(instance: any) {
       instance.data = reactive(data)
     }
   }
+
+  // 创建完成
+  if (created) {
+    callHook(created, instance.data)
+  }
+
+  function registerLifecycleHook(
+    register: (...args: any[]) => void,
+    hook?: (...args: any[]) => void,
+  ) {
+    register(hook?.bind(instance.data), instance)
+  }
+
+  // 注册 hooks
+  registerLifecycleHook(onBeforeMount, beforeMount)
+  registerLifecycleHook(onMounted, mounted)
+}
+
+/**
+ * @description: 触发生命周期钩子函数
+ * @param {Function} hook
+ * @param {*} proxy
+ */
+function callHook(hook: any, proxy: any) {
+  hook.bind(proxy)() // 绑定代理
 }
