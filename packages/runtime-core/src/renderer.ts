@@ -250,13 +250,14 @@ function baseCreateRenderer(options: RendererOptions): any {
         // 修改 mounted 状态
         instance.isMounted = true
       } else {
+        // 组件已经挂载，开始更新组件
         const { vnode } = instance
         let { next } = instance
         if (!next) {
           next = vnode
         }
 
-        // 获取下一次的 subTree
+        // 获取下一次的 subTree --> 实质是 render 函数的再次触发，更新了节点内容
         const nextTree = renderComponentRoot(instance)
 
         // 保存对应的 subTree，以便进行更新操作
