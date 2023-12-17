@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>render-component-data</title>
+    <title>render-component-hook-data</title>
     <script src="../../dist/vue/index.js"></script>
   </head>
   <body>
@@ -15,11 +15,17 @@
     const component = {
       data() {
         return {
-          msg: 'Hello Vue3 component----',
+          msg: 'Hello Vue3 component',
         }
       },
       render() {
         return h('div', this.msg)
+      },
+      created() {
+        console.log('created', this.msg)
+      },
+      mounted() {
+        console.log('mounted', this.msg)
       },
     }
 

@@ -227,26 +227,60 @@ function baseCreateRenderer(options: RendererOptions): any {
     const componentUpdateFn = () => {
       // 当前处于 mounted 之前，即执行 挂载 逻辑
       if (!instance.isMounted) {
+        // 获取 hook
+        const { bm, m } = instance
+
+        if (bm) {
+          bm() // 存在 BeforeMount, 执行回调钩子
+        }
+
+        // 从 render 中获取需要渲染的内容
         const subTree = (instance.subTree = renderComponentRoot(instance))
 
         // 通过 patch 对 subTree，进行打补丁。即：渲染组件
         patch(null, subTree, container, anchor)
 
+        if (m) {
+          m() // mounted 钩子
+        }
+
         // 把组件根节点的 el，作为组件的 el
         initialVNode.el = subTree!.el
+
+        // 修改 mounted 状态
+        instance.isMounted = true
+      } else {
+        const { vnode } = instance
+        let { next } = instance
+        if (!next) {
+          next = vnode
+        }
+
+        // 获取下一次的 subTree
+        const nextTree = renderComponentRoot(instance)
+
+        // 保存对应的 subTree，以便进行更新操作
+        const prevTree = instance.subTree
+        instance.subTree = nextTree
+
+        // 通过 patch 进行更新操作
+        patch(prevTree, nextTree, container, anchor)
+
+        // 更新 next
+        next.el = nextTree!.el
       }
     }
 
+    // 创建包含 scheduler 的 effect 实例
     const effect = (instance.effect = new ReactiveEffect(
       componentUpdateFn,
       () => queuePreFlushCb(update),
     ))
 
+    // 生成 update 函数
     const update = (instance.update = () => effect.run())
 
-    update()
-
-    console.log(initialVNode, container, anchor)
+    update() // 触发 update 函数，本质上触发的是 componentUpdateFn
   }
 
   /**
