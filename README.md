@@ -187,3 +187,47 @@ patch 补丁操作过程：
   - 在 vue3 中组件通信里面也有 `props` (Properties)和 `attrs` (Attributes)俩种，其实同上面也是类似的
 
   patchEvent 解析: TODO 解析 `_vei` 的作用。
+
+- 组件的挂载:
+
+  组件的挂载，其实也就是组件的渲染，渲染的时机是组件的挂载，渲染的时机是组件的挂载，渲染的时机是组件的挂载，重要的事情说三遍。
+
+  首先区分情况，若是没有 oldVNode，则直接挂载：
+
+  1. 生成组件实例:
+
+     ```js
+     const instance = {
+       uid: uid++, // 唯一标记
+       vnode, // 虚拟节点
+       type, // 组件类型
+       subTree: null!, // render 函数的返回值
+       effect: null!, // ReactiveEffect 实例
+       update: null!, // update 函数，触发 effect.run
+       render: null, // 组件内的 render 函数
+       // 生命周期相关
+       isMounted: false, // 是否挂载
+       bc: null, // beforeCreate
+       c: null, // created
+       bm: null, // beforeMount
+       m: null, // mounted
+     }
+     ```
+
+  2. 组件渲染：
+     这时要处理生命周期钩子函数了，首先区分组件是否已经挂载，若已经挂载了，则执行的是更新操作👇🏻。
+
+     首先从刚刚生成的组件实例中获取生命周期钩子函数，然后依次执行，这里要注意的是，在执行生命周期钩子函数的时候，会传入一个 `ctx` 参数，这个参数就是组件实例，所以，在生命周期钩子函数中，可以访问到组件实例上的属性和方法。
+
+     ```js
+     // 执行 beforeCreate 生命周期钩子函数
+     if (instance.bc) {
+       instance.bc.call(instance.ctx)
+     }
+     ```
+
+     组件的更新操作：
+
+     实质 render 函数的再次触发，更新了节点内容，而后获得 nextTree，并且再保存对应的 subTree，以便进行更新操作。
+
+     最后通过 patch 进行更新操作。
