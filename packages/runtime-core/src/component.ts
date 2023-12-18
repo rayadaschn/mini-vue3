@@ -69,6 +69,7 @@ export function setupComponent(instance: Instance) {
 }
 
 function setupStatefulComponent(instance: Instance) {
+  // 处理 Composition APi 和 Options API
   const Component = instance.type
   const { setup } = Component
 
