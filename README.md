@@ -234,3 +234,29 @@ patch 补丁操作过程：
      最后通过 patch 进行更新操作。
 
 TODO: Diff 算法解析
+
+### 编译器的实现
+
+核心流程:
+
+1. 解析器: 通过 parse 方法解析模板字符串，生成 AST 语法树；
+2. 通过 transform 方法对 AST 语法树进行转换，生成 JavaScript AST，获得 codegenNode（用于生成代码节点）；
+3. 通过 generate 方法将转换后的 AST 语法树生成 render 函数。
+
+#### AST 抽象语法树
+
+抽象语法树（abstract syntax tree或者缩写为 AST），是源代码的抽象语法结构的树状表现形式。
+
+构建 AST 需要用到 有限状态机的概念，有限状态机（Finite-State Machine, FSM）是一种表示有限个状态以及在这些状态之间的转移和动作等行为的数学模型。
+
+通过利用有限自动状态机的状态迁移，来获取 tokens 的过程，叫做对模版的标记化。
+
+生成 AST 对象的过程较为复杂，但可以拆解为三个步骤：
+
+1. 构建 parse 方法，生成 context 实例；
+2. 构建 parseChildren 方法，处理所有子节点：
+
+   1. 构建有限自动状态机解析模版
+   2. 扫码 token 生成 AST 结构
+
+3. 生成 AST 结构

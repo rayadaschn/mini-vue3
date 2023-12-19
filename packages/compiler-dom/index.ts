@@ -1,1 +1,1 @@
-console.log('HelloWorld')
+export * from './src'

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>compiler-ast</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { h, compile, render } = vue
+
+    const template = `<div>Hello Vue3 compiler</div>`
+
+    const renderFn = compile(template)
+
+    console.log(renderFn.toString())
+
+    const component = {
+      render: renderFn,
+    }
+
+    const vnodeFather = h(component)
+    render(vnodeFather, document.getElementById('app'))
+  </script>
+</html>
