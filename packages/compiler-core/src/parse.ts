@@ -429,6 +429,7 @@ function parseAttribute(context: ParserContext, nameSet: Set<string>) {
   if (/^(v-[A-Za-z0-9-]|:|\.|@|#)/.test(name)) {
     // 获取指令名称
     const match =
+      // eslint-disable-next-line no-useless-escape
       /(?:^v-([a-z0-9-]+))?(?:(?::|^\.|^@|^#)(\[[^\]]+\]|[^\.]+))?(.+)?$/i.exec(
         name,
       )!
