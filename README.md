@@ -7,6 +7,9 @@
 
 手写 Vue3 源码: 😊 monorepo + 🚀 rollup + 🤘 Typescript
 
+> [!WARNING]
+> This project is unfinished and heavily work in progress.
+
 Project D 目标：最精简的 Vue3 实现，最小拆分，逐行注释，彻底理清 Vue3 运行逻辑。
 
 - [x] 实现 reactive 复杂类型响应性
