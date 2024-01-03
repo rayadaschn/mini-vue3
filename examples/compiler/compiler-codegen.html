@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>compiler-codegen</title>
+    <script src="../../dist/vue/index.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    const { compile } = vue
+
+    const template = `<div>Hello Vue3 compiler</div>`
+
+    const { code } = compile(template)
+
+    console.log('code', code)
+
+    const renderFn = new Function(code)()
+
+    console.log('renderFn', renderFn)
+  </script>
+</html>
