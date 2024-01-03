@@ -1,19 +1,21 @@
+import { generate } from './codegen'
 import { baseParse } from './parse'
 import { transform } from './transform'
-import { transformElement } from './transforms'
+import { transformElement, transformText } from './transforms'
 
 export function baseCompile(template: string, options: any = {}) {
-  /** 简单处理模版俩侧空格 */
+  /** 简单处理模版俩侧空格后，生成 基本 AST */
   const ast = baseParse(template.trim())
 
-  console.log(JSON.stringify(ast))
-
+  // 根据 AST 生成 JavaScript AST
   transform(
     ast,
     Object.assign(options, {
-      nodeTransforms: [transformElement],
+      nodeTransforms: [transformElement, transformText],
     }),
   )
 
-  return {}
+  console.log(JSON.stringify(ast))
+
+  return generate(ast)
 }

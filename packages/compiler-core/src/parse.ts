@@ -330,16 +330,16 @@ function parseTextData(context: ParserContext, length: number): string {
 function parseTag(context: any, type: TagType): any {
   // -- 处理标签开始部分 --
 
-  // 通过正则获取标签名
+  // 通过正则获取标签名: `([a-z][^\r\n\t\f />]*)` 用于匹配标签的名称。`[^\r\n\t\f />]*`: 匹配零个或多个非空格、非换行符、非制表符、非换页符、非"/"和">"的字符。这确保标签名称中不包含空白或标签结束符号 ">"。
   const match: any = /^<\/?([a-z][^\r\n\t\f />]*)/i.exec(context.source)
   // 标签名字
-  const tag = match[1]
+  const tag = match[1] // 匹配捕获组，获取标签名称, 如 `div`
 
-  // 对模板进行解析处理
-  advanceBy(context, match[0].length)
+  // 对实际匹配的整个正则表达式的结果进行解析处理, 如 `<div`
+  advanceBy(context, match[0].length) // 即去除匹配结果, 提取出来
 
   // 属性与指令处理
-  advanceSpaces(context)
+  advanceSpaces(context) // 去除空格和换行符等
   const props = parseAttributes(context, type)
 
   // -- 处理标签结束部分 --
@@ -406,15 +406,16 @@ function parseAttributes(context: ParserContext, type: TagType) {
  * @param {Set} nameSet
  */
 function parseAttribute(context: ParserContext, nameSet: Set<string>) {
-  // 获取属性名称。例如：v-if
+  // 获取属性名称，例如：v-if
   const match = /^[^\t\r\n\f />][^\t\r\n\f />=]*/.exec(context.source)!
   const name = match[0]
+
   // 添加当前的处理属性
   nameSet.add(name)
 
   advanceBy(context, name.length)
 
-  // 获取属性值。
+  // 获取属性值
   let value: any = undefined
 
   // 解析模板，并拿到对应的属性值节点
